@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,47 +22,59 @@ public class Pointage {
     @ManyToOne
     private User user;
     
+    public Pointage(Integer id, LocalDateTime arrivalTime, LocalDateTime departureTime, User user) {
+        super();
+        this.id = id;
+        this.arrivalTime = arrivalTime;
+        this.departureTime = departureTime;
+        this.user = user;
+    }
     
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
     
+    public void setUser(User user) {
+        this.user = user;
+    }
     
-	public Pointage(Integer id, LocalDateTime arrivalTime, LocalDateTime departureTime, User user) {
-		super();
-		this.id = id;
-		this.arrivalTime = arrivalTime;
-		this.departureTime = departureTime;
-		this.user = user;
-	}
-	
-	@JsonIgnore
-	public User getUser() {
-		return user;
-	}
-	public void setUser(User user) {
-		this.user = user;
-	}
-	public Pointage() {
-		super();
-	}
-	
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
-	public LocalDateTime getArrivalTime() {
-		return arrivalTime;
-	}
-	public void setArrivalTime(LocalDateTime arrivalTime) {
-		this.arrivalTime = arrivalTime;
-	}
-	public LocalDateTime getDepartureTime() {
-		return departureTime;
-	}
-	public void setDepartureTime(LocalDateTime departureTime) {
-		this.departureTime = departureTime;
-	}
+    public Pointage() {
+        super();
+    }
     
+    public Integer getId() {
+        return id;
+    }
     
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+    
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+    
+    public LocalDateTime getDepartureTime() {
+        return departureTime;
+    }
+    
+    public void setDepartureTime(LocalDateTime departureTime) {
+        this.departureTime = departureTime;
+    }
+    
+    @JsonIgnore
+    public long getProductionHours() {
+        Duration duration = Duration.between(arrivalTime, departureTime);
+        long seconds = duration.getSeconds();
+        return seconds / 3600; 
+    }
+    
+    public void setProductionHours(long productionHours) {
+     
+    }
 }
-

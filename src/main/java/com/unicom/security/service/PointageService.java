@@ -24,6 +24,17 @@ public class PointageService {
 
         pointageRepository.save(pointage);
     }
+    
+    public Pointage getTodayPointage(User user)
+    {
+    	List<Pointage> pointageList = pointageRepository.findTodayPointageByUser(user);
+    	if(pointageList.isEmpty()) {
+    		return null;
+    	} else {
+    		return pointageList.get(0);
+    	}
+    
+    }
 
     public void terminerPointage(User user) {
         Pointage pointage = pointageRepository.findLatestPointageByUser(user).get(0);
@@ -35,5 +46,8 @@ public class PointageService {
 
     public List<Pointage> getAllPointagesByUser(User user) {
         return pointageRepository.findByUser(user);
+    }
+    public List<Pointage> getAllPointages() {
+        return pointageRepository.findAll();
     }
 }

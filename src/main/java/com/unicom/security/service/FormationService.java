@@ -10,7 +10,11 @@ import com.unicom.security.models.Mission;
 import com.unicom.security.repos.FormationRepository;
 import com.unicom.security.repos.MissionRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
+
 public class FormationService {
 
     @Autowired
@@ -26,6 +30,9 @@ public class FormationService {
     }
 
     public Formation addFormation(Formation formation) {
+    	
+    	System.out.println(formation.getParticipants().size());
+    	
         return formationRepository.save(formation);
     }
 
@@ -41,12 +48,17 @@ public class FormationService {
     	existingFormation.setFormateurEx(formation.getFormateurEx());
     	existingFormation.setStatus(formation.getStatus());
     	existingFormation.setDocuments(formation.getDocuments());
-    	existingFormation.setFormateurIn(formation.getFormateurIn());
+    	existingFormation.setEmployee(formation.getEmployee());
 
         return formationRepository.save(existingFormation);
     }
 
     public void deleteFormation(Long id) {
     	formationRepository.deleteById(id);
+    }
+    public void uploadDocuments(Long formationId, List<byte[]> documentDataList) {
+        Formation formation = getFormationById(formationId);
+        formation.getDocuments().addAll(documentDataList);
+        formationRepository.save(formation);
     }
 }

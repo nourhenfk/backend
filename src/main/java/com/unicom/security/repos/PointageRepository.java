@@ -17,5 +17,8 @@ public interface PointageRepository extends JpaRepository<Pointage, Integer> {
     
     @Query("SELECT p FROM Pointage p WHERE p.user = :user ORDER BY p.arrivalTime DESC")
     List<Pointage> findLatestPointageByUser(@Param("user") User user);
+    
+    @Query("SELECT p FROM Pointage p WHERE p.user = :user AND DATE(p.arrivalTime) = CURDATE()")
+    List<Pointage> findTodayPointageByUser(@Param("user") User user);
 }
 

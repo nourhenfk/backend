@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +65,7 @@ public class AuthenticationService {
 
     var user = repository.findByEmailAndStatus(request.getEmail(),RequestStatus.APPROVED)
         .orElseThrow();
-    //var jwtToken = jwtService.generateToken(new Map<String,String>(),user);
+  
     Map<String,Object> claims=new HashMap<String,Object>();
     claims.put("role", user.getRole());
     claims.put("username", user.getEmail());
@@ -98,5 +100,12 @@ public class AuthenticationService {
       token.setRevoked(true);
     });
     tokenRepository.saveAll(validUserTokens);
+  }
+  public User getAuthenticatedUser() {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication != null && authentication.getPrincipal() instanceof User) {
+          return (User) authentication.getPrincipal();
+      }
+      return null; 
   }
 }

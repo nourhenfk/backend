@@ -3,9 +3,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,14 +14,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.unicom.security.exceptions.RessourceNotFoundException;
 import com.unicom.security.models.Employee;
+import com.unicom.security.models.Mission;
 import com.unicom.security.models.RequestStatus;
 import com.unicom.security.repos.EmployeeRepository;
-import com.unicom.security.user.UserRepository;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -40,8 +41,12 @@ public class EmployeeController {
 	  private PasswordEncoder passwordEncoder;
      
 	@GetMapping("/listEmployee")
-	public List<Employee> getAllEmployee(){
-		return employeeRepo.findAll();
+	public ResponseEntity<List<Employee>> getAllEmployee(){
+		List<Employee> list = employeeRepo.findAll();
+		for(Employee e : list) {
+			System.out.print(e.toString());
+		}
+		return ResponseEntity.ok(list);
 	}
 	
 	@PostMapping("/addEmployee")
@@ -66,6 +71,12 @@ public class EmployeeController {
     	employee.setEmail(employeeDetails.getEmail());
     	employee.setTel(employeeDetails.getTel());
     	employee.setAdress(employeeDetails.getAdress());
+    	employee.setCivility(employeeDetails.getCivility());
+    	employee.setBankAccount(employeeDetails.getBankAccount());
+    	employee.setCin(employeeDetails.getCin());
+    	employee.setDateOfBirth(employeeDetails.getDateOfBirth());
+    	employee.setEducation(employeeDetails.getEducation());
+    	employee.setSkills(employeeDetails.getSkills());
     	this.employeeRepo.findWithUser(id).getUser().setEmail(employeeDetails.getEmail());
 		Employee updateEmployee =employeeRepo.save(employee);
 		return ResponseEntity.ok(updateEmployee);
@@ -79,5 +90,32 @@ public class EmployeeController {
     	 response.put("deleted", Boolean.TRUE);
     	 return ResponseEntity.ok(response);
     }
-  
+    @GetMapping("/{employee_id}/assignedMissions")
+    public ResponseEntity<List<Mission>> getAssignedMissions(@PathVariable("employee_id") Long employeeId) {
+        Employee employee = employeeRepo.findWithMissionsById(employeeId)
+                .orElseThrow(() -> new RessourceNotFoundException("Employee does not exist with this id"));
+
+        List<Mission> assignedMissions = employee.getMissions();
+        return ResponseEntity.ok(assignedMissions);
+    }
+    @PostMapping("/{employee_id}/uploadPicture")
+    public ResponseEntity<Employee> uploadPicture(@PathVariable("employee_id") Long employeeId,
+            @RequestParam("file") MultipartFile file) {
+
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RessourceNotFoundException("Employee does not exist with this id"));
+
+        try {
+            byte[] pictureBytes = file.getBytes();
+            employee.setPicture(pictureBytes);
+            Employee updatedEmployee = employeeRepo.save(employee);
+            return ResponseEntity.ok(updatedEmployee);
+        } catch (IOException e) {
+          
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
 }

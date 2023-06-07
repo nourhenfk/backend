@@ -7,5 +7,7 @@ import com.unicom.security.models.Formation;
 
 
 public interface FormationRepository extends JpaRepository<Formation, Long> {
+	
+	
 
 }

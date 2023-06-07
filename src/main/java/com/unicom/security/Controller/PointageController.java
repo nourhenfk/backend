@@ -1,6 +1,5 @@
 package com.unicom.security.Controller;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +28,9 @@ public class PointageController {
 
     private Integer getUserIdFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        String username = ((User)authentication.getPrincipal()).getEmail();
-        
+
+        String username = ((User) authentication.getPrincipal()).getEmail();
+
         // Retrieve the user ID from your UserRepository based on the username
         Optional<User> optionalUser = userRepository.findByEmail(username);
         if (optionalUser.isPresent()) {
@@ -65,16 +64,45 @@ public class PointageController {
         }
     }
 
+    @GetMapping("/todayPointage")
+    public ResponseEntity<Pointage> getTodayPointage() {
+        Integer userId = getUserIdFromAuthentication();
+        Optional<User> optUser = userRepository.findById(userId);
+        if (optUser.isPresent()) {
+            Pointage todayPointage = pointageService.getTodayPointage(optUser.get());
+            if (todayPointage != null) {
+                calculateAndSetProductionHours(todayPointage); // Calculate and set production hours
+                return ResponseEntity.ok(todayPointage);
+            } else {
+                return ResponseEntity.ok(new Pointage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @GetMapping("/getAllPointagesByUser")
     public ResponseEntity<List<Pointage>> getAllPointagesByUser() {
         Integer userId = getUserIdFromAuthentication();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             List<Pointage> pointages = pointageService.getAllPointagesByUser(optionalUser.get());
+            pointages.forEach(this::calculateAndSetProductionHours); 
             return ResponseEntity.ok(pointages);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-}
+    
+    @GetMapping("/getAllPointages")
+    public ResponseEntity<List<Pointage>> getAllPointages() {
+        List<Pointage> pointages = pointageService.getAllPointages();
+        pointages.forEach(this::calculateAndSetProductionHours); 
+        return ResponseEntity.ok(pointages);
+    }
 
+   
+    private void calculateAndSetProductionHours(Pointage pointage) {
+        long productionHours = pointage.getProductionHours();
+        pointage.setProductionHours(productionHours);
+    }}

@@ -1,6 +1,7 @@
 package com.unicom.security.config;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import com.unicom.security.user.UserRepository;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
+	          
   private final UserRepository repository;
 
   @Bean

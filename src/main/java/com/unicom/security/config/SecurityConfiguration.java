@@ -42,6 +42,12 @@ public class SecurityConfiguration {
         .requestMatchers("/api/v1/auth/formateurEx/**").permitAll()
         .requestMatchers("/api/v1/auth/pointages/**").permitAll()
         .requestMatchers("/api/user-registration/submit").permitAll()
+        .requestMatchers("/api/v1/auth/formations/**").permitAll()
+        .requestMatchers("/api/v1/auth/messages/**").permitAll()
+        .requestMatchers("/api/v1/auth/departments/**").permitAll()
+        .requestMatchers("/api/v1/auth/leaverequests/**").permitAll()
+        .requestMatchers("/api/v1/auth/comments/**").permitAll()
+        .requestMatchers("/api/v1/auth/users/**").permitAll()
         
         .anyRequest()
           .authenticated()

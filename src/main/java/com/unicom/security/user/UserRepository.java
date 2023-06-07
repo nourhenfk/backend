@@ -12,7 +12,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 Optional<User> findByEmailAndStatus(String email, RequestStatus approved);
 
-Optional<User> findByIdAndStatus(long id, RequestStatus status);
-List<User> findByStatus( RequestStatus approved);
+Optional<User> findByIdAndStatus(Integer id, RequestStatus status);
 
+List<User> findByStatus( RequestStatus approved);
+List<User> findByTeamId(Integer teamId);
 }
